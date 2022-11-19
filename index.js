@@ -12,6 +12,26 @@ app.use(expressLayouts);
 //database connection...
 const db = require('./config/mongoose');
 
+//session encryption key
+const session =require('express-session');
+
+
+//used for session cookie
+const passport = require('passport');
+const passportLocal = require('./config/passport-local-strategy');
+
+// store session data in mongo ...
+const MongoStore = require('connect-mongo');
+const sassMiddleware = require('node-sass-middleware');
+
+app.use(sassMiddleware({
+    src: './assets/scss',
+    dest: './assets/css',
+    debug: true,
+    outputStyle: 'extended',
+    prefix: '/css'
+}));
+
 //cookies
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(cookieParser());
@@ -22,6 +42,32 @@ app.set('layout extractScripts',true);
 
 //use static files such as css , images, js
 app.use(express.static('./assets'));
+
+//session creation
+app.use(session({
+    name: 'codeial',
+    // TODO change the secret before deployment in production mode
+    secret: 'blahsomething',
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        maxAge: (1000 * 60 * 100)
+    },
+
+     store: MongoStore.create({
+         mongoUrl:'mongodb://localhost/codeial_development',
+        mongooseConnection: db,
+        autoRemove: 'disabled'
+       },
+        function(err){
+         console.log(err || 'connect-mongodb setup ok');
+    })
+
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(passport.setAuthenticatedUser);
 
 
 //use express router
