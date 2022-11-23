@@ -13,6 +13,21 @@ module.exports.profile=function(req,res){
 //res.end('<h1> User Profile</h1>');
 
 
+// update the profile page.................
+//(req.params.id (use for route parameter)...req.body.id(actual form data send from form))
+
+module.exports.update=function(req,res){
+    if(req.user.id == req.params.id){
+        User.findByIdAndUpdate(req.params.id,req.body,function(err,user){
+            return res.redirect('back');
+        });
+    }
+    else{
+        return res.status(401).send('Unauthorized');
+    }
+
+}
+
 
 //render the sign up page....
 module.exports.signUp = function(req,res){
