@@ -81,7 +81,8 @@ module.exports.create= function(req,res){
 
 //get the sign in data and create session for user
 module.exports.createSession= function(req,res){
-   return  res.redirect('/');
+   req.flash('success','Logged in Successfuly');
+    return  res.redirect('/');
 
 }
 
@@ -90,6 +91,8 @@ module.exports.destroySession = function(req,res){
         if(err){
             return err;
         }
+        //flashing message
+        req.flash('success','You have logged out!');
         return res.redirect('/');
 
     }); 

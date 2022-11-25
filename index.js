@@ -7,7 +7,7 @@ const port =8000;
 
 //use layouts in ejs USE BEFORE ROUTES.....
 const expressLayouts = require('express-ejs-layouts');
-app.use(expressLayouts);
+
 
 //database connection...
 const db = require('./config/mongoose');
@@ -24,6 +24,10 @@ const passportLocal = require('./config/passport-local-strategy');
 const MongoStore = require('connect-mongo');
 const sassMiddleware = require('node-sass-middleware');
 
+//using flash messages
+const flash = require('connect-flash');
+const customMware = require('./config/middleware');
+
 app.use(sassMiddleware({
     src: './assets/scss',
     dest: './assets/css',
@@ -36,12 +40,20 @@ app.use(sassMiddleware({
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(cookieParser());
 
+//use static files such as css , images, js
+app.use(express.static('./assets'));
+
+//use layouts in ejs USE BEFORE ROUTES..... 
+app.use(expressLayouts);
+
 //extract style and scripts from sub pages into the layout
 app.set('layout extractStyles', true);
 app.set('layout extractScripts',true);
 
-//use static files such as css , images, js
-app.use(express.static('./assets'));
+//set up the view engine
+app.set('view engine','ejs');
+app.set('views','./views');
+
 
 //session creation
 app.use(session({
@@ -69,13 +81,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.setAuthenticatedUser);
 
+app.use(flash()); // use just after session middleware
+app.use(customMware.setFlash);
 
 //use express router
 app.use('/',require('./routes/index'));
-
-//set up the view engine
-app.set('view engine','ejs');
-app.set('views','./views');
 
 app.listen(port, function(err){
     if(err){
