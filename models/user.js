@@ -33,7 +33,11 @@ let storage = multer.diskStorage({
     filename: function (req, file, cb) {
       cb(null, file.fieldname + '-' + Date.now()) //Appending extension
     }
-  })
+  });
+
+//static methods
+UserSchema.statics.uploadedAvatar = multer({ storage: storage}).single('avatar'); // attaching discStorage to storage
+UserSchema.statics.avatarPath = AVATAR_PATH;// publicaly available
 
 
 const User = mongoose.model('User', UserSchema);
