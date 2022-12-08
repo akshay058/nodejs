@@ -43,6 +43,9 @@ app.use(cookieParser());
 //use static files such as css , images, js
 app.use(express.static('./assets'));
 
+//make the uploads path available to the browser
+app.use('/uploads',express.static(__dirname + '/uploads'));
+
 //use layouts in ejs USE BEFORE ROUTES..... 
 app.use(expressLayouts);
 
