@@ -1,4 +1,7 @@
 const User = require('../models/user');
+const fs =require('fs');
+const path = require('path');
+const { dirname } = require('path');
 
 
 // find user
@@ -35,6 +38,11 @@ module.exports.update= async function(req,res){
                 user.email= req.body.email;
 
                 if(req.file){
+                    // delete file uploaded as avatar
+                    if(user.avatar){
+                        fs.unlinkSync(path.join(__dirname,'..',user.avatar));
+                    }
+
                     //this is saving the path of the uploads file into the avatar field in the user
                     user.avatar= User.avatarPath + '/' + req.file.filename;
                 }
